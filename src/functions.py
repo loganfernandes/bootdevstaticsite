@@ -1,4 +1,6 @@
-from textnode import TextType, TextNode
+from textnode import TextType, TextNode, text_node_to_html_node
+from blocktype import block_to_block_type, BlockType
+from htmlnode import LeafNode, ParentNode
 import re
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -95,3 +97,84 @@ def markdown_to_blocks(markdown):
         clean_block = block.strip()
         cleaned_list.append(clean_block)
     return cleaned_list
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    children = []
+    for block in blocks:
+        children.append(block_to_html_node(block))
+    return ParentNode("div", children)
+        
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
+    match block_type:
+        case (BlockType.PARAGRAPH):
+            text = block.split("\n")
+            text = " ".join(text)
+            children = text_to_children(text)
+            return ParentNode("p", children)
+        case (BlockType.HEADING):
+            heading_level = get_heading_level(block)
+            text = block[heading_level + 1:]
+            children = text_to_children(text)
+            return LeafNode(f"h{heading_level}", children)
+        case (BlockType.CODE):
+            code = ParentNode("code", [get_code_lines(block)])
+            return ParentNode("pre", [code])
+        case (BlockType.QUOTE):
+            text = " ".join(get_quote_lines(block))
+            children = text_to_children(text)
+            return ParentNode("blockquote", children)
+        case (BlockType.UNORDERED_LIST):
+            li_nodes = get_unordered_list_lines(block)
+            return ParentNode("ul", li_nodes)
+        case (BlockType.ORDERED_LIST):
+            li_nodes = get_ordered_list_lines(block)
+            return ParentNode("ol", li_nodes)
+        
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    html_nodes = []
+    for node in text_nodes:
+        html_nodes.append(text_node_to_html_node(node))
+    return html_nodes
+
+def get_heading_level(block):
+    count = 0
+    for char in block:
+        if char == "#":
+            count += 1
+        else:
+            break
+    return count
+
+def get_quote_lines(block):
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        new_line = line[1:].strip()
+        new_lines.append(new_line)
+    return new_lines
+
+def get_unordered_list_lines(block):
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        new_line = line[2:]
+        new_lines.append(ParentNode("li", text_to_children(new_line)))
+    return new_lines
+
+def get_ordered_list_lines(block):
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        new_line = line.split(". ", 1)
+        new_lines.append(ParentNode("li", text_to_children(new_line[1])))
+    return new_lines
+    
+def get_code_lines(block):
+    text = block[4:-3]
+    raw_text_node = TextNode(text, TextType.TEXT)
+    child = text_node_to_html_node(raw_text_node)
+    return child
+    

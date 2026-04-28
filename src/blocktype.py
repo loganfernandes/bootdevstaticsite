@@ -23,6 +23,7 @@ def block_to_block_type(markdown_block):
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
 
+###  Helper functions ###
 def is_heading(lines):
     count = 0
     if len(lines) != 1:
