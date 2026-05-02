@@ -1,7 +1,7 @@
 from textnode import TextType, TextNode, text_node_to_html_node
 from blocktype import block_to_block_type, BlockType
 from htmlnode import LeafNode, ParentNode
-import re
+import re, os, shutil
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -178,4 +178,21 @@ def get_code_lines(block):
     child = text_node_to_html_node(raw_text_node)
     return child
     
+def write_static_to_public():
+    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../static"))
+    public_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../public"))
+
+    if os.path.exists(public_dir):
+        shutil.rmtree(public_dir)
+    os.mkdir(public_dir)
+    copy_dir(static_dir, public_dir)
     
+def copy_dir(src, dst):
+    for item in os.listdir(src):
+        source = os.path.join(src, item)
+        destination = os.path.join(dst, item)
+        if os.path.isfile(source):
+            shutil.copy(source, destination)
+        else:
+            os.mkdir(destination)
+            copy_dir(source, destination)
