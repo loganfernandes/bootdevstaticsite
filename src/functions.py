@@ -231,7 +231,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     with open(dest_path, 'w') as dest_file:
         dest_file.write(template_content)
         
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath): #content/, template.html, public/
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     for item in os.listdir(dir_path_content):
         source_file = os.path.join(dir_path_content, item)
         destination = os.path.join(dest_dir_path, item)
