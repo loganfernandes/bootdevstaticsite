@@ -1,9 +1,8 @@
-from textnode import TextNode, TextType
-
+from functions import write_static_to_public
 
 def main():
-    myText = TextNode("here's a dummy value", TextType.LINK, "www.thebigGoog.com")
-    print(myText)
-    
+    print("Running...")
+    write_static_to_public()
+    print("Generation complete.")
     
 main()
