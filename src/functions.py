@@ -196,3 +196,35 @@ def copy_dir(src, dst):
         else:
             os.mkdir(destination)
             copy_dir(source, destination)
+            
+def extract_title(markdown):
+    if not markdown.startswith("# "):
+        raise Exception("No heading found")
+    lines = markdown.split("\n")
+    first_line = lines[0]
+    count = 0
+    for char in first_line:
+        if char == "#":
+            count += 1
+        else:
+            break
+    title = first_line[count + 1:].strip()
+    return title
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}...")
+    
+    with open(from_path, 'r') as from_file, open(template_path, 'r') as template_file:
+        from_content = from_file.read()
+        template_content = template_file.read()
+        html_node = markdown_to_html_node(from_content)
+        html_string = html_node.to_html()
+        title = extract_title(from_content)
+        template_content = template_content.replace("{{ Title }}", title)
+        template_content = template_content.replace("{{ Content }}", html_string)
+    
+    dir_name = os.path.dirname(dest_path)
+    os.makedirs(dir_name, exist_ok=True)
+    
+    with open(dest_path, 'w') as dest_file:
+        dest_file.write(template_content)
