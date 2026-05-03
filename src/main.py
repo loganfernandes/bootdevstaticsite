@@ -9,9 +9,9 @@ def main():
         
     
     print("Running...")
-    write_static_to_public()
+    write_static_to_public("../static", "../docs")
     
-    generate_pages_recursive("content/", "template.html", "docs/", basepath)
+    generate_pages_recursive("content", "template.html", "docs", basepath)
     
     print("Generation complete.")
 main()

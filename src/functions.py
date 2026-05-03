@@ -178,9 +178,9 @@ def get_code_lines(block):
     child = text_node_to_html_node(raw_text_node)
     return child
     
-def write_static_to_public():
-    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../static"))
-    public_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../public"))
+def write_static_to_public(source_dir, target_dir):
+    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), source_dir))
+    public_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), target_dir))
 
     if os.path.exists(public_dir):
         shutil.rmtree(public_dir)
