@@ -1,5 +1,5 @@
 import unittest
-from functions import extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, markdown_to_html_node
+from functions import extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, markdown_to_html_node, extract_title
 from textnode import TextNode, TextType
 
 
@@ -235,5 +235,52 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+        
+    def test_extract_title(self):
+        md = """# Tolkien Fan Club
+
+![JRR Tolkien sitting](/images/tolkien.png)
+
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
+"""
+
+        title = extract_title(md)
+        self.assertEqual(
+            title,
+            "Tolkien Fan Club"
+        )
+        
+    def test_extract_title_using_h2(self):
+        md = """## H2 Title
+
+![JRR Tolkien sitting](/images/tolkien.png)
+
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
+"""
+
+        self.assertRaises(Exception, extract_title, md)
+        
+    def test_extract_title_no_heading(self):
+        md = """Missing Title
+
+![JRR Tolkien sitting](/images/tolkien.png)
+
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
+"""
+
+        self.assertRaises(Exception, extract_title, md)
+        
 if __name__ == "__main__":
     unittest.main()
