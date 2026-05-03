@@ -117,7 +117,7 @@ def block_to_html_node(block):
             heading_level = get_heading_level(block)
             text = block[heading_level + 1:]
             children = text_to_children(text)
-            return LeafNode(f"h{heading_level}", children)
+            return ParentNode(f"h{heading_level}", children)
         case (BlockType.CODE):
             code = ParentNode("code", [get_code_lines(block)])
             return ParentNode("pre", [code])
@@ -228,3 +228,14 @@ def generate_page(from_path, template_path, dest_path):
     
     with open(dest_path, 'w') as dest_file:
         dest_file.write(template_content)
+        
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path): #content/, template.html, public/
+    for item in os.listdir(dir_path_content):
+        source_file = os.path.join(dir_path_content, item)
+        destination = os.path.join(dest_dir_path, item)
+        if os.path.isfile(source_file):
+            if item.endswith(".md"):
+                dest_html = destination.replace(".md", ".html")
+                generate_page(source_file, template_path, dest_html)
+        else:
+            generate_pages_recursive(source_file, template_path, destination)
