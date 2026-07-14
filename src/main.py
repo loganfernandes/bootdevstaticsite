@@ -13,5 +13,5 @@ def main():
     
     generate_pages_recursive("content", "template.html", "docs", basepath)
     
-    print("Generation complete.")
+    print("Generation complete")
 main()
